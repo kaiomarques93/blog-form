@@ -26,6 +26,7 @@ type FormData = {
   isFeatured: boolean
   categories: string[]
   image: string | null
+  author: string
 }
 
 export default function BlogPostForm() {
@@ -58,6 +59,11 @@ export default function BlogPostForm() {
       <div>
         <Label htmlFor="description">Descrição</Label>
         <CustomEditor />
+      </div>
+
+      <div>
+        <Label htmlFor="auth">Autor</Label>
+        <Input id="author" {...register('author', { required: true })} />
       </div>
 
       <div className="flex items-center space-x-2">
