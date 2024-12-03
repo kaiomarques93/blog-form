@@ -7,8 +7,12 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import CustomEditor from './custom-editor'
+
+import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
+import { blogPostSchemaType } from "@/schemas/blog"
+import { CustomEditor } from "./custom-editor"
 import { ImageUploadModal } from './image-upload-modal'
+
 
 const categories = [
   'Estudos de Caso',
@@ -25,23 +29,58 @@ type FormData = {
   isActive: boolean
   isFeatured: boolean
   categories: string[]
-  image: string | null
+  image: string
   author: string
+  date: string
 }
 
 export default function BlogPostForm() {
-  const { register, handleSubmit, control, setValue } = useForm<FormData>()
+  const { register, handleSubmit, control, setValue, watch } = useForm<FormData>()
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
 
-  const onSubmit = (data: FormData) => {
-    console.log(data)
-    // Here you would typically send the data to your backend
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.clear()
+      console.log(data)
+      
+      const file = base64ToFile(data.image, data.title + '.jpg')
+      
+      const res = await uploadImageToS3(file)
+      console.log(res)
+      
+      const finalBlog: blogPostSchemaType = {
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description,
+        active: data.isActive,
+        featured: data.isFeatured,
+        categories: data.categories,
+        image: res,
+        author: data.author,
+        date: data.date,
+      }
+
+      
+      console.log(finalBlog)
+      
+    } catch (error) {
+      console.error("An error occurred during form submission:", error)
+      // Optionally, you can display an error message to the user
+      alert("There was an error submitting the form. Please try again.")
+    }
   }
 
   const handleImageSave = (croppedImage: string) => {
     setValue('image', croppedImage)
     setPreviewImage(croppedImage)
+  }
+
+  const [text, setText] = useState('')
+
+  const handleSetDescription = (description: string) => {
+    setValue('description', description)
+    setText(description)
   }
 
   return (
@@ -57,8 +96,16 @@ export default function BlogPostForm() {
       </div>
 
       <div>
+        <Label htmlFor="date">Data</Label>
+        <Input id="date" {...register('date', { required: true })} />
+      </div>
+
+      <div>
         <Label htmlFor="description">Descrição</Label>
-        <CustomEditor />
+        <CustomEditor 
+          text={text}
+          handleChange={handleSetDescription}
+        />
       </div>
 
       <div>
@@ -67,12 +114,18 @@ export default function BlogPostForm() {
       </div>
 
       <div className="flex items-center space-x-2">
-        <Switch id="isActive" {...register('isActive')} />
+        <Switch id="isActive" 
+          checked={watch('isActive')}
+          onCheckedChange={(checked) => setValue('isActive', checked)}
+        />
         <Label htmlFor="isActive">Ativo</Label>
       </div>
 
       <div className="flex items-center space-x-2">
-        <Switch id="isFeatured" {...register('isFeatured')} />
+        <Switch id="isFeatured" 
+          checked={watch('isFeatured')}
+          onCheckedChange={(checked) => setValue('isFeatured', checked)}
+        />
         <Label htmlFor="isFeatured">Featured</Label>
       </div>
 
@@ -111,7 +164,7 @@ export default function BlogPostForm() {
         </Button>
         {previewImage && (
           <div className="mt-2">
-            <img src={previewImage} alt="Preview" className="max-w-full h-auto" />
+            <img id='cropped-image' src={previewImage} alt="Preview" className="max-w-full h-auto" />
           </div>
         )}
       </div>

@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = "postgres://default:3aCpczGEK5iW@ep-proud-rain-a4frorj8-pooler.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require&pgbouncer=true&connect_timeout=15"
+    directUrl = "postgres://default:3aCpczGEK5iW@ep-proud-rain-a4frorj8.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
+}
+
+model BlogPost {
+    id          String   @id @default(uuid())
+    userId      String
+    title       String
+    subtitle    String
+    description String
+    author      String
+    date        DateTime
+    image       String?
+    categories  String[]
+    active      Boolean
+    featured    Boolean?
+
+    @@unique([title, userId])
+    @@map("blog_posts")
+}
