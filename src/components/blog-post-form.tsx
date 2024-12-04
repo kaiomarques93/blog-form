@@ -36,10 +36,41 @@ type FormData = {
   date: string
 }
 
-export default function BlogPostForm() {
-  const { register, handleSubmit, control, setValue, watch, formState: { isSubmitting, }, } = useForm<FormData>({defaultValues: {
-    author: 'Cidade Conectada'
-  }})
+
+
+
+type BlogProps = {
+    id: string;
+    userId: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    author: string;
+    date: Date;
+    image: string | null;
+    categories: string[];
+    active: boolean;
+    featured: boolean | null;
+  }
+
+type Props = {
+  blogPost?: BlogProps
+}
+
+export default function BlogPostForm({ blogPost }: Props) {
+
+  const { register, handleSubmit, control, setValue, watch, formState: { isSubmitting, }, } = 
+    useForm<FormData>({defaultValues: {
+      title: blogPost?.title || '',
+      subtitle: blogPost?.subtitle || '',
+      description: blogPost?.description || '',
+      isActive: blogPost?.active || false,
+      isFeatured: blogPost?.featured || false,
+      categories: blogPost?.categories || [],
+      image: blogPost?.image || '',
+      date: blogPost?.date.toDateString() || '',
+      author: blogPost?.author || 'Cidade Conectada'
+    }})
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
 
@@ -84,7 +115,7 @@ export default function BlogPostForm() {
     setPreviewImage(croppedImage)
   }
 
-  const [text, setText] = useState('')
+  const [text, setText] = useState(blogPost?.description || '')
 
   const handleSetDescription = (description: string) => {
     setValue('description', description)

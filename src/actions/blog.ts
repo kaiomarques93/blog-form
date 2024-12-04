@@ -60,7 +60,7 @@ export async function getBlogs() {
   });
 }
 
-export async function GetBlogById(id: string) {
+export async function getBlogById(id: string) {
   return await prisma.blogPost.findUnique({
     where: {
       id,
