@@ -44,8 +44,16 @@ export async function CreateBlog(data: blogPostSchemaType) {
   return blogPost.id;
 }
 
-export async function GetBlogs() {
+export async function getBlogs() {
+  const user = await currentUser();
+  if (!user) {
+    throw new UserNotFoundErr();
+  }
+  
   return await prisma.blogPost.findMany({
+    where: {
+      userId: user.id,
+    },
     orderBy: {
       date: "desc",
     },

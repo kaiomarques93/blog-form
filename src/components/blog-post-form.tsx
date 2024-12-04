@@ -13,6 +13,7 @@ import { blogPostSchemaType } from "@/schemas/blog"
 import { CustomEditor } from "./custom-editor"
 import { ImageUploadModal } from './image-upload-modal'
 import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
+import { useRouter } from "next/navigation"
 
 
 const categories = [
@@ -36,9 +37,13 @@ type FormData = {
 }
 
 export default function BlogPostForm() {
-  const { register, handleSubmit, control, setValue, watch } = useForm<FormData>()
+  const { register, handleSubmit, control, setValue, watch, formState: { isSubmitting, }, } = useForm<FormData>({defaultValues: {
+    author: 'Cidade Conectada'
+  }})
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+
+  const router = useRouter()
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -64,6 +69,8 @@ export default function BlogPostForm() {
       
 
       await CreateBlog(finalBlog)
+
+      router.push('/')
       
     } catch (error) {
       console.error("An error occurred during form submission:", error)
@@ -170,7 +177,7 @@ export default function BlogPostForm() {
         )}
       </div>
 
-      <Button type="submit">Salvar</Button>
+      <Button type="submit" className="disabled:cursor-not-allowed" disabled={isSubmitting}>Salvar</Button>
 
       <ImageUploadModal
         isOpen={isImageModalOpen}
