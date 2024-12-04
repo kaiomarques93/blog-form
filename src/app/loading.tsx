@@ -5,22 +5,22 @@ import { Loader2 } from 'lucide-react'
 
 export default function LoadingPage() {
   const [loadingMessage, setLoadingMessage] = useState('Loading awesomeness')
-  
+
   useEffect(() => {
     const messages = [
       'Preparing something amazing',
       'Almost there',
       'Just a moment longer',
       'Crafting perfection',
-      'Loading awesomeness'
+      'Loading awesomeness',
     ]
     let currentIndex = 0
-    
+
     const intervalId = setInterval(() => {
       currentIndex = (currentIndex + 1) % messages.length
       setLoadingMessage(messages[currentIndex])
     }, 3000)
-    
+
     return () => clearInterval(intervalId)
   }, [])
 
@@ -36,4 +36,3 @@ export default function LoadingPage() {
     </div>
   )
 }
-

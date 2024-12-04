@@ -1,26 +1,23 @@
-"use server";
+'use server'
 
-import prisma from "@/lib/prisma";
-import { blogPostSchema, blogPostSchemaType } from "@/schemas/blog";
+import prisma from '@/lib/prisma'
+import { blogPostSchema, blogPostSchemaType } from '@/schemas/blog'
 import { currentUser } from '@clerk/nextjs/server'
 
 class UserNotFoundErr extends Error {}
 
-
-
 export async function createBlog(data: blogPostSchemaType) {
-
-  const validation = blogPostSchema.safeParse(data);
+  const validation = blogPostSchema.safeParse(data)
   if (!validation.success) {
-    console.log(validation.error);
-    throw new Error("blog not valid");
+    console.log(validation.error)
+    throw new Error('blog not valid')
   }
 
-  const user = await currentUser();
-  
+  const user = await currentUser()
+
   if (!user) {
-    console.log("user not found");
-    throw new UserNotFoundErr();
+    console.log('user not found')
+    throw new UserNotFoundErr()
   }
 
   const blogPost = await prisma.blogPost.create({
@@ -36,30 +33,29 @@ export async function createBlog(data: blogPostSchemaType) {
       active: data.active,
       featured: data.featured,
     },
-  });
+  })
 
   if (!blogPost) {
-    throw new Error("something went wrong");
+    throw new Error('something went wrong')
   }
 
-
-  return 1;
+  return 1
 }
 
 export async function getBlogs() {
-  const user = await currentUser();
+  const user = await currentUser()
   if (!user) {
-    throw new UserNotFoundErr();
+    throw new UserNotFoundErr()
   }
-  
+
   return await prisma.blogPost.findMany({
     where: {
       userId: user.id,
     },
     orderBy: {
-      date: "desc",
+      date: 'desc',
     },
-  });
+  })
 }
 
 export async function getBlogById(id: string) {
@@ -67,10 +63,13 @@ export async function getBlogById(id: string) {
     where: {
       id,
     },
-  });
+  })
 }
 
-export async function updateBlog(id: string, data: Partial<blogPostSchemaType>) {
+export async function updateBlog(
+  id: string,
+  data: Partial<blogPostSchemaType>,
+) {
   return await prisma.blogPost.update({
     where: {
       id,

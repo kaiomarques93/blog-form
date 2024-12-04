@@ -1,4 +1,4 @@
-import { string, z } from "zod";
+import { string, z } from 'zod'
 
 export const blogPostSchema = z.object({
   title: z.string().min(4),
@@ -10,6 +10,6 @@ export const blogPostSchema = z.object({
   categories: string().array(),
   active: z.boolean(),
   featured: z.boolean(),
-});
+})
 
-export type blogPostSchemaType = z.infer<typeof blogPostSchema>;
+export type blogPostSchemaType = z.infer<typeof blogPostSchema>

@@ -73,13 +73,10 @@ body {
   }
 }
 
-
 /* CK Editor Styles */
 
-
 @media print {
-	body {
-		margin: 0 !important;
-	}
+  body {
+    margin: 0 !important;
+  }
 }
-

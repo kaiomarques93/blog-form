@@ -1,12 +1,17 @@
 'use client'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useRouter } from "next/navigation"
-import parse from 'html-react-parser';
-
-
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
+import parse from 'html-react-parser'
 
 interface CardGridProps {
   items: any[]
@@ -18,7 +23,11 @@ export function CardGrid({ items }: CardGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
       {items.map((item) => (
-        <Card key={item.id} className="flex flex-col cursor-pointer hover:shadow-md" onClick={() => router.push(`/editar-blog/${item.id}`)}>
+        <Card
+          key={item.id}
+          className="flex flex-col cursor-pointer hover:shadow-md"
+          onClick={() => router.push(`/editar-blog/${item.id}`)}
+        >
           <CardHeader>
             {item.image && (
               <img
@@ -32,16 +41,18 @@ export function CardGrid({ items }: CardGridProps) {
                 <CardTitle>{item.title}</CardTitle>
                 <CardDescription>{item.subtitle}</CardDescription>
               </div>
-              {item.featured && (
-                <Badge variant="secondary">Featured</Badge>
-              )}
+              {item.featured && <Badge variant="secondary">Featured</Badge>}
             </div>
           </CardHeader>
           <CardContent className="flex-grow">
-            <div className="text-sm text-gray-600 mb-4">{parse(item.description || '')}</div>
+            <div className="text-sm text-gray-600 mb-4">
+              {parse(item.description || '')}
+            </div>
             <div className="flex flex-wrap gap-2 mb-4">
               {item.categories.map((category: any) => (
-                <Badge key={category} variant="outline">{category}</Badge>
+                <Badge key={category} variant="outline">
+                  {category}
+                </Badge>
               ))}
             </div>
           </CardContent>
@@ -51,8 +62,8 @@ export function CardGrid({ items }: CardGridProps) {
               <span className="mx-2">•</span>
               <span>{new Date(item.date).toLocaleDateString()}</span>
             </div>
-            <Badge variant={item.active ? "default" : "destructive"}>
-              {item.active ? "Active" : "Inactive"}
+            <Badge variant={item.active ? 'default' : 'destructive'}>
+              {item.active ? 'Active' : 'Inactive'}
             </Badge>
           </CardFooter>
         </Card>
@@ -60,4 +71,3 @@ export function CardGrid({ items }: CardGridProps) {
     </div>
   )
 }
-

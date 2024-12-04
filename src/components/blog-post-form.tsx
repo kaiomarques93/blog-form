@@ -1,20 +1,19 @@
 'use client'
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { createBlog, updateBlog } from "@/actions/blog"
-import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
-import { blogPostSchemaType } from "@/schemas/blog"
-import { useRouter } from "next/navigation"
-import { CustomEditor } from "./custom-editor"
+import { createBlog, updateBlog } from '@/actions/blog'
+import { base64ToFile, uploadImageToS3 } from '@/lib/upload-image-to-s3'
+import { blogPostSchemaType } from '@/schemas/blog'
+import { useRouter } from 'next/navigation'
+import { CustomEditor } from './custom-editor'
 import { ImageUploadModal } from './image-upload-modal'
-
 
 const categories = [
   'Estudos de Caso',
@@ -36,33 +35,38 @@ type FormData = {
   date: string
 }
 
-
-
-
 type BlogProps = {
-    id: string;
-    userId: string;
-    title: string;
-    subtitle: string;
-    description: string;
-    author: string;
-    date: Date;
-    image: string | null;
-    categories: string[];
-    active: boolean;
-    featured: boolean | null;
-  }
+  id: string
+  userId: string
+  title: string
+  subtitle: string
+  description: string
+  author: string
+  date: Date
+  image: string | null
+  categories: string[]
+  active: boolean
+  featured: boolean | null
+}
 
 type Props = {
   blogPost?: BlogProps
 }
 
 export default function BlogPostForm({ blogPost }: Props) {
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    blogPost?.image || '',
+  )
 
-  const [previewImage, setPreviewImage] = useState<string | null>(blogPost?.image || '')
-
-  const { register, handleSubmit, control, setValue, watch, formState: { isSubmitting, }, } = 
-    useForm<FormData>({defaultValues: {
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<FormData>({
+    defaultValues: {
       title: blogPost?.title || '',
       subtitle: blogPost?.subtitle || '',
       description: blogPost?.description || '',
@@ -70,9 +74,12 @@ export default function BlogPostForm({ blogPost }: Props) {
       isFeatured: blogPost?.featured || false,
       categories: blogPost?.categories || [],
       image: blogPost?.image || '',
-      date: blogPost?.date ? new Date(blogPost.date).toISOString().split('T')[0] : '',
-      author: blogPost?.author || 'Cidade Conectada'
-    }})
+      date: blogPost?.date
+        ? new Date(blogPost.date).toISOString().split('T')[0]
+        : '',
+      author: blogPost?.author || 'Cidade Conectada',
+    },
+  })
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   const router = useRouter()
@@ -80,12 +87,12 @@ export default function BlogPostForm({ blogPost }: Props) {
   const handleCreateBlog = async (data: FormData) => {
     try {
       const file = base64ToFile(data.image, data.title + '.jpg')
-      
+
       let res = null
       if (file) {
         res = await uploadImageToS3(file)
       }
-      
+
       const finalBlog: blogPostSchemaType = {
         title: data.title,
         subtitle: data.subtitle,
@@ -100,22 +107,19 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       await createBlog(finalBlog)
       router.push('/')
-
     } catch (error) {
-      console.error("An error occurred during form submission:", error)
-      alert("There was an error submitting the form. Please try again.")
+      console.error('An error occurred during form submission:', error)
+      alert('There was an error submitting the form. Please try again.')
     }
   }
 
-
-  const handleUpdateBlog =async (data: FormData) => {
+  const handleUpdateBlog = async (data: FormData) => {
     try {
       const file = base64ToFile(data.image, data.title + '.jpg')
-      
 
       let res = null
 
-      if (file) {  
+      if (file) {
         res = await uploadImageToS3(file)
       }
 
@@ -137,25 +141,24 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       router.push('/')
     } catch (error) {
-      console.error("An error occurred during form submission:", error)
-      alert("There was an error submitting the form. Please try again.")
+      console.error('An error occurred during form submission:', error)
+      alert('There was an error submitting the form. Please try again.')
     }
   }
 
   const isEdit = !!blogPost
 
   const onSubmit = async (data: FormData) => {
-    try {   
+    try {
       if (!isEdit) {
         await handleCreateBlog(data)
       } else {
         await handleUpdateBlog(data)
       }
-      
     } catch (error) {
-      console.error("An error occurred during form submission:", error)
+      console.error('An error occurred during form submission:', error)
       // Optionally, you can display an error message to the user
-      alert("There was an error submitting the form. Please try again.")
+      alert('There was an error submitting the form. Please try again.')
     }
   }
 
@@ -172,7 +175,10 @@ export default function BlogPostForm({ blogPost }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-2xl mx-auto">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-8 max-w-2xl mx-auto"
+    >
       <div>
         <Label htmlFor="title">Título</Label>
         <Input id="title" {...register('title', { required: true })} />
@@ -185,15 +191,16 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       <div>
         <Label htmlFor="date">Data</Label>
-        <Input id="date" {...register('date', { required: true })} type='date'/>
+        <Input
+          id="date"
+          {...register('date', { required: true })}
+          type="date"
+        />
       </div>
 
       <div>
         <Label htmlFor="description">Descrição</Label>
-        <CustomEditor 
-          text={text}
-          handleChange={handleSetDescription}
-        />
+        <CustomEditor text={text} handleChange={handleSetDescription} />
       </div>
 
       <div>
@@ -202,17 +209,23 @@ export default function BlogPostForm({ blogPost }: Props) {
       </div>
 
       <div className="flex items-center space-x-2">
-        <Switch id="isActive" 
+        <Switch
+          id="isActive"
           checked={watch('isActive')}
-          onCheckedChange={(checked) => setValue('isActive', checked ? true : false)}
+          onCheckedChange={(checked) =>
+            setValue('isActive', checked ? true : false)
+          }
         />
         <Label htmlFor="isActive">Ativo</Label>
       </div>
 
       <div className="flex items-center space-x-2">
-        <Switch id="isFeatured" 
+        <Switch
+          id="isFeatured"
           checked={watch('isFeatured')}
-          onCheckedChange={(checked) => setValue('isFeatured', checked ? true : false)}
+          onCheckedChange={(checked) =>
+            setValue('isFeatured', checked ? true : false)
+          }
         />
         <Label htmlFor="isFeatured">Featured</Label>
       </div>
@@ -233,8 +246,10 @@ export default function BlogPostForm({ blogPost }: Props) {
                     onCheckedChange={(checked) => {
                       const updatedCategories = checked
                         ? [...(field.value || []), category]
-                        : (field.value || []).filter((val: string) => val !== category);
-                      field.onChange(updatedCategories);
+                        : (field.value || []).filter(
+                            (val: string) => val !== category,
+                          )
+                      field.onChange(updatedCategories)
                     }}
                   />
                   <Label htmlFor={`category-${category}`}>{category}</Label>
@@ -252,12 +267,23 @@ export default function BlogPostForm({ blogPost }: Props) {
         </Button>
         {previewImage && (
           <div className="mt-2">
-            <img id='cropped-image' src={previewImage} alt="Preview" className="max-w-full h-auto" />
+            <img
+              id="cropped-image"
+              src={previewImage}
+              alt="Preview"
+              className="max-w-full h-auto"
+            />
           </div>
         )}
       </div>
 
-      <Button type="submit" className="disabled:cursor-not-allowed" disabled={isSubmitting}>Salvar</Button>
+      <Button
+        type="submit"
+        className="disabled:cursor-not-allowed"
+        disabled={isSubmitting}
+      >
+        Salvar
+      </Button>
 
       <ImageUploadModal
         isOpen={isImageModalOpen}
@@ -267,4 +293,3 @@ export default function BlogPostForm({ blogPost }: Props) {
     </form>
   )
 }
-
