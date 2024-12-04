@@ -7,9 +7,9 @@ import slugify from 'slugify'
  * @param fileName - The name of the file (including extension).
  * @returns A File object.
  */
-export function base64ToFile(base64: string, fileName: string): File {
+export function base64ToFile(base64: string, fileName: string): File | null {
   if (!base64) {
-    throw new Error("Base64 string is undefined or null");
+    return null;
   }
 
   // Split the base64 string to get the mime type and the data
@@ -17,7 +17,7 @@ export function base64ToFile(base64: string, fileName: string): File {
   const mimeType = mimeInfo.match(/data:(.*?);base64/)?.[1];
 
   if (!mimeType || !base64Data) {
-    throw new Error("Invalid Base64 string");
+    return null;
   }
 
   // Decode the Base64 string to a byte array

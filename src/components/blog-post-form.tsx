@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { createBlog } from "@/actions/blog"
+import { createBlog, updateBlog } from "@/actions/blog"
 import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
 import { blogPostSchemaType } from "@/schemas/blog"
 import { useRouter } from "next/navigation"
@@ -70,21 +70,21 @@ export default function BlogPostForm({ blogPost }: Props) {
       isFeatured: blogPost?.featured || false,
       categories: blogPost?.categories || [],
       image: blogPost?.image || '',
-      date: blogPost?.date.toDateString() || '',
+      date: blogPost?.date ? new Date(blogPost.date).toISOString().split('T')[0] : '',
       author: blogPost?.author || 'Cidade Conectada'
     }})
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  
 
   const router = useRouter()
 
-  const onSubmit = async (data: FormData) => {
-    
-    try {   
+  const handleCreateBlog = async (data: FormData) => {
+    try {
       const file = base64ToFile(data.image, data.title + '.jpg')
       
-      const res = await uploadImageToS3(file)
-      // console.log(res)
+      let res = null
+      if (file) {
+        res = await uploadImageToS3(file)
+      }
       
       const finalBlog: blogPostSchemaType = {
         title: data.title,
@@ -98,11 +98,59 @@ export default function BlogPostForm({ blogPost }: Props) {
         date: new Date(data.date),
       }
 
+      await createBlog(finalBlog)
+      router.push('/')
+
+    } catch (error) {
+      console.error("An error occurred during form submission:", error)
+      alert("There was an error submitting the form. Please try again.")
+    }
+  }
+
+
+  const handleUpdateBlog =async (data: FormData) => {
+    try {
+      const file = base64ToFile(data.image, data.title + '.jpg')
       
 
-      await createBlog(finalBlog)
+      let res = null
+
+      if (file) {  
+        res = await uploadImageToS3(file)
+      }
+
+      const finalBlog: blogPostSchemaType = {
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description,
+        active: data.isActive || false,
+        featured: data.isFeatured || false,
+        categories: data.categories,
+        image: res || data.image,
+        author: data.author,
+        date: new Date(data.date),
+      }
+
+      console.log(finalBlog)
+
+      await updateBlog(blogPost!.id, finalBlog)
 
       router.push('/')
+    } catch (error) {
+      console.error("An error occurred during form submission:", error)
+      alert("There was an error submitting the form. Please try again.")
+    }
+  }
+
+  const isEdit = !!blogPost
+
+  const onSubmit = async (data: FormData) => {
+    try {   
+      if (!isEdit) {
+        await handleCreateBlog(data)
+      } else {
+        await handleUpdateBlog(data)
+      }
       
     } catch (error) {
       console.error("An error occurred during form submission:", error)

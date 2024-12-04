@@ -4,7 +4,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
-
+import parse from 'html-react-parser';
 
 
 
@@ -38,7 +38,7 @@ export function CardGrid({ items }: CardGridProps) {
             </div>
           </CardHeader>
           <CardContent className="flex-grow">
-            <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+            <div className="text-sm text-gray-600 mb-4">{parse(item.description || '')}</div>
             <div className="flex flex-wrap gap-2 mb-4">
               {item.categories.map((category: any) => (
                 <Badge key={category} variant="outline">{category}</Badge>
