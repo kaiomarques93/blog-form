@@ -8,7 +8,8 @@ class UserNotFoundErr extends Error {}
 
 
 
-export async function CreateBlog(data: blogPostSchemaType) {
+export async function createBlog(data: blogPostSchemaType) {
+
   const validation = blogPostSchema.safeParse(data);
   if (!validation.success) {
     console.log(validation.error);
@@ -16,7 +17,7 @@ export async function CreateBlog(data: blogPostSchemaType) {
   }
 
   const user = await currentUser();
- 
+  
   if (!user) {
     console.log("user not found");
     throw new UserNotFoundErr();
@@ -41,7 +42,8 @@ export async function CreateBlog(data: blogPostSchemaType) {
     throw new Error("something went wrong");
   }
 
-  return blogPost.id;
+
+  return 1;
 }
 
 export async function getBlogs() {

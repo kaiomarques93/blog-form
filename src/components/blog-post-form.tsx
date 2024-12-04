@@ -8,12 +8,12 @@ import { Switch } from "@/components/ui/switch"
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { CreateBlog } from "@/actions/blog"
+import { createBlog } from "@/actions/blog"
+import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
 import { blogPostSchemaType } from "@/schemas/blog"
+import { useRouter } from "next/navigation"
 import { CustomEditor } from "./custom-editor"
 import { ImageUploadModal } from './image-upload-modal'
-import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
-import { useRouter } from "next/navigation"
 
 
 const categories = [
@@ -59,6 +59,8 @@ type Props = {
 
 export default function BlogPostForm({ blogPost }: Props) {
 
+  const [previewImage, setPreviewImage] = useState<string | null>(blogPost?.image || '')
+
   const { register, handleSubmit, control, setValue, watch, formState: { isSubmitting, }, } = 
     useForm<FormData>({defaultValues: {
       title: blogPost?.title || '',
@@ -72,14 +74,13 @@ export default function BlogPostForm({ blogPost }: Props) {
       author: blogPost?.author || 'Cidade Conectada'
     }})
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  
 
   const router = useRouter()
 
   const onSubmit = async (data: FormData) => {
-    try {
     
-      
+    try {   
       const file = base64ToFile(data.image, data.title + '.jpg')
       
       const res = await uploadImageToS3(file)
@@ -99,7 +100,7 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       
 
-      await CreateBlog(finalBlog)
+      await createBlog(finalBlog)
 
       router.push('/')
       
@@ -136,7 +137,7 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       <div>
         <Label htmlFor="date">Data</Label>
-        <Input id="date" {...register('date', { required: true })} />
+        <Input id="date" {...register('date', { required: true })} type='date'/>
       </div>
 
       <div>
