@@ -8,10 +8,11 @@ import { Switch } from "@/components/ui/switch"
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
-import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
+import { CreateBlog } from "@/actions/blog"
 import { blogPostSchemaType } from "@/schemas/blog"
 import { CustomEditor } from "./custom-editor"
 import { ImageUploadModal } from './image-upload-modal'
+import { base64ToFile, uploadImageToS3 } from "@/lib/upload-image-to-s3"
 
 
 const categories = [
@@ -41,28 +42,28 @@ export default function BlogPostForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.clear()
-      console.log(data)
+    
       
       const file = base64ToFile(data.image, data.title + '.jpg')
       
       const res = await uploadImageToS3(file)
-      console.log(res)
+      // console.log(res)
       
       const finalBlog: blogPostSchemaType = {
         title: data.title,
         subtitle: data.subtitle,
         description: data.description,
-        active: data.isActive,
-        featured: data.isFeatured,
+        active: data.isActive || false,
+        featured: data.isFeatured || false,
         categories: data.categories,
         image: res,
         author: data.author,
-        date: data.date,
+        date: new Date(data.date),
       }
 
       
-      console.log(finalBlog)
+
+      await CreateBlog(finalBlog)
       
     } catch (error) {
       console.error("An error occurred during form submission:", error)
@@ -116,7 +117,7 @@ export default function BlogPostForm() {
       <div className="flex items-center space-x-2">
         <Switch id="isActive" 
           checked={watch('isActive')}
-          onCheckedChange={(checked) => setValue('isActive', checked)}
+          onCheckedChange={(checked) => setValue('isActive', checked ? true : false)}
         />
         <Label htmlFor="isActive">Ativo</Label>
       </div>
@@ -124,7 +125,7 @@ export default function BlogPostForm() {
       <div className="flex items-center space-x-2">
         <Switch id="isFeatured" 
           checked={watch('isFeatured')}
-          onCheckedChange={(checked) => setValue('isFeatured', checked)}
+          onCheckedChange={(checked) => setValue('isFeatured', checked ? true : false)}
         />
         <Label htmlFor="isFeatured">Featured</Label>
       </div>

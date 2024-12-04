@@ -11,11 +11,14 @@ class UserNotFoundErr extends Error {}
 export async function CreateBlog(data: blogPostSchemaType) {
   const validation = blogPostSchema.safeParse(data);
   if (!validation.success) {
+    console.log(validation.error);
     throw new Error("blog not valid");
   }
 
   const user = await currentUser();
+ 
   if (!user) {
+    console.log("user not found");
     throw new UserNotFoundErr();
   }
 

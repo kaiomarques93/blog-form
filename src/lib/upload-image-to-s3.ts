@@ -8,25 +8,29 @@ import slugify from 'slugify'
  * @returns A File object.
  */
 export function base64ToFile(base64: string, fileName: string): File {
-    // Split the base64 string to get the mime type and the data
-    const [mimeInfo, base64Data] = base64.split(",");
-    const mimeType = mimeInfo.match(/data:(.*?);base64/)?.[1];
-  
-    if (!mimeType || !base64Data) {
-      throw new Error("Invalid Base64 string");
-    }
-  
-    // Decode the Base64 string to a byte array
-    const binaryString = atob(base64Data);
-    const byteArray = new Uint8Array(binaryString.length);
-  
-    for (let i = 0; i < binaryString.length; i++) {
-      byteArray[i] = binaryString.charCodeAt(i);
-    }
-  
-    // Create a File object
-    return new File([byteArray], fileName, { type: mimeType });
+  if (!base64) {
+    throw new Error("Base64 string is undefined or null");
   }
+
+  // Split the base64 string to get the mime type and the data
+  const [mimeInfo, base64Data] = base64.split(",");
+  const mimeType = mimeInfo.match(/data:(.*?);base64/)?.[1];
+
+  if (!mimeType || !base64Data) {
+    throw new Error("Invalid Base64 string");
+  }
+
+  // Decode the Base64 string to a byte array
+  const binaryString = atob(base64Data);
+  const byteArray = new Uint8Array(binaryString.length);
+
+  for (let i = 0; i < binaryString.length; i++) {
+    byteArray[i] = binaryString.charCodeAt(i);
+  }
+
+  // Create a File object
+  return new File([byteArray], fileName, { type: mimeType });
+}
   
 
 export async function uploadImageToS3(file: File): Promise<string> {
