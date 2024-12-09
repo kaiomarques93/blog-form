@@ -40,7 +40,7 @@ export async function uploadImageToS3(file: File): Promise<string> {
 
   const finalUrl =
     process.env.NEXT_PUBLIC_SIGNED_URL_FUNCTION +
-    `?id=${uniqueId}&file_name=${fileName}&content_type=${applicationType}`
+    `?id=${uniqueId}&file_name=${fileName}&content_type=${applicationType}&project=landingPage`
 
   try {
     if (!process.env.NEXT_PUBLIC_SIGNED_URL_FUNCTION) {
