@@ -43,15 +43,7 @@ export async function createBlog(data: blogPostSchemaType) {
 }
 
 export async function getBlogs() {
-  const user = await currentUser()
-  if (!user) {
-    throw new UserNotFoundErr()
-  }
-
   return await prisma.blogPost.findMany({
-    where: {
-      userId: user.id,
-    },
     orderBy: {
       date: 'desc',
     },
@@ -75,5 +67,13 @@ export async function updateBlog(
       id,
     },
     data,
+  })
+}
+
+export async function deleteBlog(id: string) {
+  return await prisma.blogPost.delete({
+    where: {
+      id,
+    },
   })
 }

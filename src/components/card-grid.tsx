@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/card'
 import { useRouter } from 'next/navigation'
 import parse from 'html-react-parser'
+import { Button } from './ui/button'
+import { Pencil, Trash2 } from 'lucide-react'
 
 interface CardGridProps {
   items: any[]
@@ -25,8 +27,7 @@ export function CardGrid({ items }: CardGridProps) {
       {items.map((item) => (
         <Card
           key={item.id}
-          className="flex flex-col cursor-pointer hover:shadow-md"
-          onClick={() => router.push(`/editar-blog/${item.id}`)}
+          className="flex flex-col" 
         >
           <CardHeader>
             {item.image && (
@@ -65,6 +66,25 @@ export function CardGrid({ items }: CardGridProps) {
             <Badge variant={item.active ? 'default' : 'destructive'}>
               {item.active ? 'Active' : 'Inactive'}
             </Badge>
+            <div className="flex gap-2 ml-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.push(`/editar-blog/${item.id}`)}
+                title="Edit post"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                // onClick={() => onDelete?.(item.id)}
+                title="Delete post"
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       ))}
