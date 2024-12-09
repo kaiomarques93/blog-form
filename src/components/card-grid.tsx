@@ -25,10 +25,7 @@ export function CardGrid({ items }: CardGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
       {items.map((item) => (
-        <Card
-          key={item.id}
-          className="flex flex-col max-h-[250px] overflow-y-auto"
-        >
+        <Card key={item.id} className="flex flex-col ">
           <CardHeader>
             {item.image && (
               <img
@@ -46,7 +43,7 @@ export function CardGrid({ items }: CardGridProps) {
             </div>
           </CardHeader>
           <CardContent className="flex-grow">
-            <div className="text-sm text-gray-600 mb-4">
+            <div className="text-sm text-gray-600 mb-4 max-h-[250px] overflow-y-auto">
               {parse(item.description || '')}
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
