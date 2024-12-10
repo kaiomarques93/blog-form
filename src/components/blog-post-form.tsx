@@ -37,7 +37,6 @@ type FormData = {
 
 type BlogProps = {
   id: string
-  userId: string
   title: string
   subtitle: string
   description: string

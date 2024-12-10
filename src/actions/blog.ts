@@ -47,6 +47,19 @@ export async function getBlogs() {
     orderBy: {
       date: 'desc',
     },
+    select: {
+      id: true,
+      title: true,
+      subtitle: true,
+      description: true,
+      date: true,
+      image: true,
+      categories: true,
+      active: true,
+      featured: true,
+      author: true,
+      // Exclude userId
+    },
   })
 }
 
@@ -54,6 +67,19 @@ export async function getBlogById(id: string) {
   return await prisma.blogPost.findUnique({
     where: {
       id,
+    },
+    select: {
+      id: true,
+      title: true,
+      subtitle: true,
+      description: true,
+      date: true,
+      image: true,
+      categories: true,
+      active: true,
+      featured: true,
+      author: true,
+      // Exclude userId
     },
   })
 }
