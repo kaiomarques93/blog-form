@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import parse from 'html-react-parser'
 import { Button } from './ui/button'
 import { Pencil, Trash2 } from 'lucide-react'
+import { useDeleteBlog } from '@/hooks/use-delete-blog'
 
 interface CardGridProps {
   items: any[]
@@ -21,6 +22,8 @@ interface CardGridProps {
 
 export function CardGrid({ items }: CardGridProps) {
   const router = useRouter()
+
+  const { mutateAsync: onDelete } = useDeleteBlog()
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
@@ -75,7 +78,7 @@ export function CardGrid({ items }: CardGridProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                // onClick={() => onDelete?.(item.id)}
+                onClick={() => onDelete(item.id)}
                 title="Delete post"
                 className="text-destructive hover:text-destructive"
               >
