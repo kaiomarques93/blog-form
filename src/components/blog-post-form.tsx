@@ -11,9 +11,16 @@ import { Controller, useForm } from 'react-hook-form'
 import { createBlog, updateBlog } from '@/actions/blog'
 import { base64ToFile, uploadImageToS3 } from '@/lib/upload-image-to-s3'
 import { blogPostSchemaType } from '@/schemas/blog'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { CustomEditor } from './custom-editor'
 import { ImageUploadModal } from './image-upload-modal'
+
+const TextEditor = dynamic(() => import('@/components/ui/text-editor'), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse">Carregando editor de texto...</div>
+  ),
+})
 
 const categories = [
   'Estudos de Caso',
@@ -134,8 +141,6 @@ export default function BlogPostForm({ blogPost }: Props) {
         date: new Date(data.date),
       }
 
-      console.log(finalBlog)
-
       await updateBlog(blogPost!.id, finalBlog)
 
       router.push('/')
@@ -199,7 +204,7 @@ export default function BlogPostForm({ blogPost }: Props) {
 
       <div>
         <Label htmlFor="description">Descrição</Label>
-        <CustomEditor text={text} handleChange={handleSetDescription} />
+        <TextEditor defaultValue={text} onChange={handleSetDescription} />
       </div>
 
       <div>
